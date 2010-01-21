@@ -1,0 +1,27 @@
+---
+layout: post
+title: "Making an authoritative Git repository automatically push to Github"
+---
+
+I'm still in the process of learning Git, and while it's been fairly rough in the beginning, I feel like I'm starting to round the curve of really being productive.  While we are still primarily using Subversion at "Kongregate":http://www.kongregate.com, I've been trying to use Git whenever possible.
+
+For a side project I've been working on, I wanted to have my authoritative Git repo in our colo, behind our VPN, to both speed up deploys and to know that we don't need to rely on a third party service.  But, at the same time, I wanted to be able to use Github's awesome UI.
+
+h3. hooks/post-receive
+
+There's not a lot to it, but just set up Github as a remote for your server side repo, then drop this into your hooks/post-receive and be sure to make it executable:
+
+{% highlight ruby %}#!/usr/bin/env ruby
+STDIN.read.split("\n").each do |line|
+   oldrev, newrev, refname = line.split(' ')
+   
+   if refname.match(/^refs\/heads\/(.*)/)
+     branch = $1
+   
+     `git push origin #{branch}`
+   else
+     puts "#{refname} was weird, not sure what to do."
+   end
+end{% endhighlight %}
+
+Nothing too special, but I was pretty happy to get it all working without too much effort.
