@@ -6,7 +6,7 @@ layout: master
 h2. About Andrew Grim
 
 <span style="margin:0 10px; float:right"><img src="http://en.gravatar.com/userimage/366767/890e74f80fdd033ffaf4c909da3d2609.jpg" 
-width="240" height="160" alt="my mug" /></span>
+alt="my mug" /></span>
 
 I like to write code and I work for "Kongregate":http://www.kongregate.com.  Sometimes I use "GitHub.com":http://github.com and it makes me happy.
 
