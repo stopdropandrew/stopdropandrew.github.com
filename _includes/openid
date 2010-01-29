@@ -1,0 +1,5 @@
+<link rel="openid.delegate" href="http://stopdropandrew.myopenid.com" />
+<link rel="openid2.local_id" href="http://stopdropandrew.myopenid.com" />
+<link rel="openid2.provider" href="http://www.myopenid.com/server" />
+<meta http-equiv="X-XRDS-Location" content="http://www.myopenid.com/xrds?username=stopdropandrew.myopenid.com" />
+<link rel="openid.server" href="http://www.myopenid.com/server" />
