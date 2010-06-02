@@ -1,0 +1,45 @@
+---
+layout: post
+title: "Where Unicorns go to die: Watching unicorn workers with monit"
+---
+
+<img src="/images/dead-unicorn1.jpg">
+
+While working on switching Kongregate from Mongrel to Unicorn I was googling around for a monit recipe for watching Unicorn child processes and unfortunately couldn't find anything. The real issue is that monit will only watch either a the parent process or a parent including all of its children. What I really needed was the ability to watch each child process individually, and kill them when their memory usage grows out of control.  
+
+I was able to find another process monitoring tool called <a href="http://github.com/arya/bluepill">bluepill</a> which looks like it was built almost explicitly for this reason. While monit can be a pain in the ass, it's stable and I don't have any other reason to switch. Ideally monit will eventually allow monitoring child process, until then I found a decent workaround.
+
+h3. The problem
+
+Since the ideal case of monit watching child processes doesn't exist, why not have monit just watch each child process individually. Well the odd thing here is that monit wants to start and stop each process, but the Unicorn master starts each worker, so we'll have monit just worry about killing the children.
+
+h3. init.d script
+
+For my init.d script, I use the script that is packaged with the Unicorn source with a simple change, I add a kill_worker method.
+
+<script src="http://gist.github.com/421663.js?file=kill+worker"></script>
+
+h3. Unicorn master monit config
+
+This is the simple part, but we want monit to watch the master worker, it shouldn't ever grow about our memory limit, but we do want monit to make sure it's running.
+
+<script src="http://gist.github.com/421670.js?file=gistfile1.txt"></script>
+
+h3. Unicorn workers monit config
+
+Here's where the magic happens...I guess. So the weird part about monit watching Unicorns is that monit wants to start each process it watches.  We'll just trick monit into doing a no-op for the start and let it watch the pid files to figure out when the master starts the workers.
+
+<script src="http://gist.github.com/421674.js?file=Unicorn+worker+monit+config"></script>
+
+h3. Unicorn post_fork
+
+The final piece of the puzzle is making each child write out its own pid file, which we do with a simple after_fork hook.  I use port for the pid file, for slightly easier debugging, but there is no real reason for it.
+
+<script src="http://gist.github.com/421683.js?file=Unicorn+config"></script>
+
+End the end the final solution is kind of cheesy, since monit just keeps doing nothing until the master starts the workers, but once everything gets started up you are golden.
+
+Finally, here's the monit commands to start everything up.
+
+  <pre>monit start all -g unicorn
+  monit start all -g unicorn_workers</pre>
