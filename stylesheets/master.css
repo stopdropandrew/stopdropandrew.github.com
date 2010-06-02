@@ -250,3 +250,6 @@ div.related {
 .float-right { float: right; }
 
 a img { border: 0; }
+
+.gist-meta { font-family: Helvetica; font-size: 0.7em; }
+.gist-data { max-height: 300px; }
