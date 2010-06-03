@@ -5,7 +5,7 @@ title: "Where Unicorns go to die: Watching unicorn workers with monit"
 
 <img src="/images/dead-unicorn1.jpg">
 
-While working on switching Kongregate from Mongrel to Unicorn I was googling around for a monit recipe for watching Unicorn child processes and unfortunately couldn't find anything. The real issue is that monit will only watch either a the parent process or a parent including all of its children. What I really needed was the ability to watch each child process individually, and kill them when their memory usage grows out of control.  
+While working on switching Kongregate from Mongrel to Unicorn I was googling around for a monit recipe for watching Unicorn child processes and unfortunately couldn't find anything. The real issue is that monit will only watch either just the parent process or a the entire process family (parent including all of its children). What I really needed was the ability to watch each child process individually, and kill them when their memory usage grows out of control.
 
 I was able to find another process monitoring tool called <a href="http://github.com/arya/bluepill">bluepill</a> which looks like it was built almost explicitly for this reason. While monit can be a pain in the ass, it's stable and I don't have any other reason to switch. Ideally monit will eventually allow monitoring child process, until then I found a decent workaround.
 
@@ -37,7 +37,7 @@ The final piece of the puzzle is making each child write out its own pid file, w
 
 <script src="http://gist.github.com/421683.js?file=Unicorn+config"></script>
 
-End the end the final solution is kind of cheesy, since monit just keeps doing nothing until the master starts the workers, but once everything gets started up you are golden.
+In the end the final solution is kind of cheesy, since monit just keeps doing nothing until the master starts the workers, but once everything gets started up you are golden.
 
 Finally, here's the monit commands to start everything up.
 
