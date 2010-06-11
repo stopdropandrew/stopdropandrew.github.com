@@ -1,0 +1,17 @@
+ssh number of hosts issues:
+
+ ** [kong18 :: out] ssh_exchange_identification: Connection closed by remote host
+ ** [kong18 :: out] fatal: The remote end hung up unexpectedly
+^C*** [deploy:update_code] rolling back
+
+
+erb/csv encoding issues
+
+t=ActionView::Template.new('app/views/ad_revenue_payment_runs/new.csv.csvbuilder')
+ActionView::TemplateHandlers::CsvBuilder.new.compile(t).encoding
+
+
+image squeeze
+ - initial release
+ - add command line
+
