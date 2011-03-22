@@ -1,0 +1,46 @@
+---
+layout: post
+title: "Making image juice: squeezing the unused bytes out of your images"
+---
+
+<img src="/images/squeeze_pop.jpg">
+
+Image size is definitely a case of "less is more." Many images on the web are larger than they need to be, and there has been a recent surge in the movement to strip out excess bits while maintaining a lossless image.  <a href="http://www.smushit.com/ysmush.it/">Smush.it™</a> is a great example. Unfortunately, even though it runs on open source image utilities, there is no API and <a href="http://www.yahoo.com">Yahoo!</a> seems to have no plan to release an open source version.
+
+Have no fear! It isn't doing anything complicated, so why not just do it ourselves.  Plus, the authors basically laid out what they do in the excellent <a href="http://www.amazon.com/Even-Faster-Web-Sites-Performance/dp/0596522304">Even Faster Web Sites</a>.
+
+h3. Image Squeeze
+
+<a href="http://www.github.com/stopdropandrew/image_squeeze">Image Squeeze</a> is a pluggable library for optimizing images. The only library it requires is ImageMagick (specifically it uses identify to figure out what type of image it's looking at). The default processors included with the library require pngcrush, jpegtran, gifsicle (for animated gifs), and ImageMagick's convert. Here's a quick example:
+
+    * set up an ImageSqueeze with the default processors
+    <pre>squeezer = ImageSqueeze.new(:default_processors => true)</pre>
+
+    * in-place squeeze of our png
+    <pre>squeezer.squeeze!('my_logo.png')</pre>
+
+If you don't want to install one of those for some reason, don't worry, image_squeeze just won't include the processor if the utility isn't available.
+
+h3. Adding your own processors
+
+Let's say PngCrush isn't good enough for you, and you want to add an OptiPNG processor as well.  Easy enough, we can just plug that in.
+
+<script src="http://gist.github.com/421846.js?file=OptiPNGProcessor"></script>
+
+So you just need to implement two methods, once which returns an image type (constants defined in ImageSqueeze) and a squeeze method (takes an input filename and leaves a new image in the output filename). *Note:* The default processors are all lossless quality, if you implement your own it's up to you to verify that you aren't losing quality.
+
+Now let's load it in with our defaults,
+
+    <pre>squeezer = ImageSqueeze.new(:default_processors => true, :processors => [ImageSqueeze::OptiPNGProcessor])</pre>
+
+Or if you don't like the defaults, just use your own processors
+
+    <pre>squeezer = ImageSqueeze.new(:processors => [ImageSqueeze::OptiPNGProcessor])</pre>
+
+That was pretty useful, and OptiPNG is great, so I just added it to the defaults. Progress!
+
+Now just hook this into wherever you handle uploaded images and you're set. I'd definitely recommend doing this out-of-process as far as the server request, or you'll kill your request times, but I'll leave that up to you.
+
+One thing I'd really like to do is make a pre-commit hook that process any images you are checking in so you don't have to worry about it. But that's for another time...
+
+Woohoo less bytes!
